@@ -25,3 +25,4 @@ logs/*.log
 # Temporary outputs
 scratch/
 .pytest_cache/
+.vercel
