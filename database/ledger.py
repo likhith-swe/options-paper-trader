@@ -176,7 +176,6 @@ class LedgerDB:
             """, (exit_time, exit_price, exit_reason, gross_pnl, total_brok, total_tax, net_pnl, trade_id))
 
             # Update Account: return initial margin + gross PnL - exit charges
-            # Cash increase = exit_proceeds - exit_charges
             cur.execute("""
             UPDATE account
             SET cash_balance = cash_balance + ? - ?,
@@ -227,6 +226,13 @@ class LedgerDB:
                 tot_trades, wins, losses, roi_pct, notes
             ))
             conn.commit()
+
+    def has_snapshot_for_date(self, date_str: str) -> bool:
+        """Return True if a daily snapshot already exists for the given date."""
+        with self._get_conn() as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT COUNT(*) FROM daily_snapshots WHERE snapshot_date = ?", (date_str,))
+            return cur.fetchone()[0] > 0
 
     def get_trades_for_date(self, date_str: str) -> List[Dict]:
         with self._get_conn() as conn:

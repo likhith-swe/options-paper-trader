@@ -8,6 +8,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/Users/likhith/.gemini/antigravity/scratch/options-paper-trader/.venv/bin/python</string>
+        <string>-u</string>
         <string>main.py</string>
         <string>start-daemon</string>
     </array>

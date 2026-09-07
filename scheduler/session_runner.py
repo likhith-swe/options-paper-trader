@@ -56,17 +56,39 @@ class SessionRunner:
 
     def run_session(self, date_str: str) -> Dict:
         """
-        Execute full day's trading session candle-by-candle.
+        Execute full day's trading session candle-by-candle (Idempotent).
         """
-        print(f"\n=======================================================")
-        print(f"  STARTING PAPER TRADING SESSION FOR: {date_str}")
-        print(f"=======================================================")
+        # Idempotency: if session for this date is already finalized, return existing summary
+        if self.ledger.has_snapshot_for_date(date_str):
+            print(f"• Session for {date_str} is already reconciled in ledger. Returning existing record.", flush=True)
+            trades = self.ledger.get_trades_for_date(date_str)
+            account = self.ledger.get_account()
+
+            gross_pnl = sum(t['gross_pnl'] for t in trades)
+            charges = sum(t['brokerage'] + t['taxes'] for t in trades)
+            net_pnl = sum(t['net_pnl'] for t in trades)
+
+            return {
+                "date": date_str,
+                "total_trades": len(trades),
+                "winning_trades": sum(1 for t in trades if t['net_pnl'] > 0),
+                "losing_trades": sum(1 for t in trades if t['net_pnl'] <= 0),
+                "gross_pnl": round(gross_pnl, 2),
+                "total_charges": round(charges, 2),
+                "net_pnl": round(net_pnl, 2),
+                "closing_cash_balance": round(account['cash_balance'], 2),
+                "trades": trades
+            }
+
+        print(f"\n=======================================================", flush=True)
+        print(f"  STARTING PAPER TRADING SESSION FOR: {date_str}", flush=True)
+        print(f"=======================================================", flush=True)
 
         self.nifty_engine.reset_session()
         self.sensex_engine.reset_session()
 
         df_nifty, df_sensex = self.fetch_intraday_data(date_str)
-        print(f"Loaded {len(df_nifty)} candles for NIFTY and {len(df_sensex)} candles for SENSEX.")
+        print(f"Loaded {len(df_nifty)} candles for NIFTY and {len(df_sensex)} candles for SENSEX.", flush=True)
 
         # Common timestamps (09:15 to 15:30)
         all_times = sorted(list(set(df_nifty.index).union(set(df_sensex.index))))

@@ -21,12 +21,20 @@ class DailyTradingDaemon:
 
     def run_daily_loop(self):
         """Continuous loop monitoring clock and executing sessions."""
-        print("================================================================")
-        print("  🚀 CHRONOS OPTIONS PAPER TRADING DAEMON ACTIVATED")
-        print("  Portfolio Capital: ₹ 10,00,000.00 | Active Mon - Fri")
-        print("================================================================")
+        print("================================================================", flush=True)
+        print("  🚀 CHRONOS OPTIONS PAPER TRADING DAEMON ACTIVATED", flush=True)
+        print("  Portfolio Capital: ₹ 10,00,000.00 | Active Mon - Fri", flush=True)
+        print("================================================================", flush=True)
 
-        last_executed_date = None
+        now = datetime.datetime.now()
+        today_str = now.strftime("%Y-%m-%d")
+
+        # Check if today's session has already been finalized
+        if self.ledger.has_snapshot_for_date(today_str):
+            last_executed_date = today_str
+            print(f"[{now.strftime('%H:%M:%S')}] Market session for {today_str} is already reconciled.", flush=True)
+        else:
+            last_executed_date = None
 
         while True:
             now = datetime.datetime.now()
@@ -37,22 +45,22 @@ class DailyTradingDaemon:
             if self.is_market_day(now.date()):
                 # Session trigger: 15:31 PM (reconciliation window)
                 if time_str >= "15:31" and last_executed_date != today_str:
-                    print(f"[{now.strftime('%H:%M:%S')}] Market closed for {today_str}. Reconciling day's session...")
+                    print(f"[{now.strftime('%H:%M:%S')}] Market closed for {today_str}. Reconciling day's session...", flush=True)
                     try:
                         summary = self.runner.run_session(today_str)
                         recap = TradeNotifier.dispatch(summary)
-                        print(recap)
+                        print(recap, flush=True)
                         last_executed_date = today_str
                     except Exception as e:
-                        print(f"Error during daily session execution: {e}")
+                        print(f"Error during daily session execution: {e}", flush=True)
                         traceback.print_exc()
 
                 elif "09:15" <= time_str <= "15:30":
                     # During market hours
-                    print(f"[{now.strftime('%H:%M:%S')}] Live market window active. Monitoring ticks...", end="\r")
+                    print(f"[{now.strftime('%H:%M:%S')}] Live market window active. Monitoring ticks...", flush=True)
 
             else:
-                print(f"[{now.strftime('%H:%M:%S')}] Weekend / Market Closed. Next session Monday 09:15 AM.", end="\r")
+                print(f"[{now.strftime('%H:%M:%S')}] Weekend / Market Closed. Next session Monday 09:15 AM.", flush=True)
 
             # Sleep 30 seconds before next check
             time.sleep(30)
