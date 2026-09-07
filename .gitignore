@@ -1,0 +1,27 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# Logs
+logs/*.log
+*.log
+
+# IDE and OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# Temporary outputs
+scratch/
+.pytest_cache/

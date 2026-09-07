@@ -1,0 +1,28 @@
+services:
+  # Background scheduler: runs Monday to Friday, monitoring market hours and running strategies
+  daemon:
+    build: .
+    container_name: options_trader_daemon
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Kolkata
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL:-}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    command: python main.py start-daemon
+
+  # Web Dashboard: Interactive analytics and real-time trade ledger UI
+  dashboard:
+    build: .
+    container_name: options_trader_dashboard
+    restart: unless-stopped
+    ports:
+      - "8501:8501"
+    environment:
+      - TZ=Asia/Kolkata
+    volumes:
+      - ./data:/app/data:ro
+    command: streamlit run reporting/dashboard.py --server.port=8501 --server.address=0.0.0.0 --server.headless=true
