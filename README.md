@@ -59,9 +59,20 @@ NIFTY_1165  NIFTY26SEP23800CE   475 units  13:50    ₹160.7    15:05   ₹134.2
 
 ---
 
+## 🌐 Live Web Terminal (Vercel)
+
+The live algorithmic trading dashboard is permanently deployed on Vercel:
+👉 **[https://options-paper-trader.vercel.app](https://options-paper-trader.vercel.app)**
+
+- **Real-time Serverless API**: `https://options-paper-trader.vercel.app/api/all`
+- **Interactive Equity Curve**: Powered by ApexCharts & Tailwind
+- **Live Trade Ledger**: Filterable by strategy (SENSEX 1lyAlgos & NIFTY 1165)
+
+---
+
 ## 🚢 Deployment Guide
 
-This system supports four production deployment models depending on your infrastructure:
+This system supports multiple production deployment models depending on your infrastructure:
 
 ### Option 1: Native macOS Background Daemon (Zero Cost, Native)
 Runs automatically in the background on your Mac via `launchd`, starting upon system login.
